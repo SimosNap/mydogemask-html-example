@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tip Me - MyDogeMask simple html integration example</title>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+	
+	<style>
+    	body {
+        	font-family: "Comic Sans MS", "Comic Sans", cursive;
+    	}
+    	
+    	.row {
+        	max-width: 1280px;
+        	margin:0px auto;
+    	}
+    	.wallet {
+        	display:flex;
+        	flex-direction: column;
+        	justify-content:center;
+        	align-items: center;
+        	font-size: 0.75rem;
+    	}
+    	.wallet-data {
+        	margin-right: 0.75rem;
+    	}
+    	.btn {
+        	white-space: nowrap;
+    	}
+    	.btn-disabled {
+        	background: grey;
+        	border-color: grey ;
+        	color: #999;
+        	cursor: none;
+    	}
+
+    	.btn-disabled:hover {
+        	background: grey;
+        	border-color: grey ;
+        	color: #999;
+        	cursor: none;
+    	}
+    	
+     	#qrcode { padding: 0.75rem; border: 3px dotted  #555; border-radius: 6px;margin: 0px auto; width: 160px; box-sizing:content-box;margin-bottom:0.75rem; margin-top:0.25em;}
+     	#nomydogetips { 
+         	max-width:280px;
+         	margin: 0 auto;
+         	display:none;
+        }
+        
+        #mydogetips {
+            max-width:280px;
+            margin: 0 auto;
+            display:none;
+        }
+        
+    	#mydogetips-title {
+        	font-family: "Comic Sans MS", "Comic Sans", cursive;
+        	max-width:280px;
+        	margin: 0 auto;
+        	width: fit-content;
+        	justify-content: center;
+        	display:none;
+        	box-sizing: border-box;
+    	}
+    	
+    	#mydogetips-title img {
+        	width:32px;margin:8px;
+        	margin-right:0px; 
+        	border-radius:3px; 
+        }
+    	
+    	.mydogetip-icon {
+          -webkit-transition-duration: 0.4s; /* Safari */
+          transition-duration: 0.4s;
+          overflow: hidden;
+          cursor: pointer;
+          padding: 0.60rem 0.75rem;
+          background: #222;
+          border-radius: 5px 0px 0px 5px;
+          border: 1px solid #222;
+          color: white;
+        }
+    
+    	.address-container {
+        	margin: 0px 20px; 
+        	position: relative;
+        }
+        
+        .clipboard-copy {
+          -webkit-transition-duration: 0.4s; /* Safari */
+          transition-duration: 0.4s;
+          overflow: hidden;
+          cursor: pointer;
+          padding: 0.60rem 0.75rem;
+          background: #222;
+          border-radius: 5px 0px 0px 5px;
+          border: 1px solid #222;
+          color: white;
+        }
+        
+        .clipboard-copy:after {
+          content: "Address Copied!";
+          display: block;
+          position: absolute;
+          opacity: 0;
+          transition: all 0.8s;
+          padding: 5px !important;
+          border: 1px solid #333;
+          border-radius: 3px;
+          background: #333;
+          font-family: monospace;
+          font-size: 10px;
+          font-weight: bold;
+          top:-1rem;
+          z-index:9999;
+        }
+        
+        .clipboard-copy:active:after {
+          padding: 0;
+          margin: 0;
+          opacity: 1;
+          transition: 0s
+        }
+        
+        #tipResult {
+            margin-top:0.75rem;
+            display:none;
+            flex-direction: row;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Logo</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Home</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">About</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Contact</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<!-- Main Content and Sidebar -->
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Sidebar -->
+			<div class="col-md-5">
+				
+				<div class="card p-2 my-2">
+    				
+                    <div class="wallet">
+                        <div class="wallet-data">
+                            <div id="wallet-address">What is <a data-toggle="tooltip" title="MyDogeMask is the open source Dogecoin wallet for web browsers.  Send your friends a tip, or connect your wallet to merchant websites and send payments instantly!">MyDogeMask</a> extension?</div>
+                            <div id="wallet-balance">Download MyDogeMask <a href="https://chrome.google.com/webstore/detail/mydogemask/mljponncmhdlacmjbophphkbgcgjdnff" target="_blank" data-toggle="tooltip" title="Download MyDogeMask Wallet Extension">Chrome Store</a></div>
+                        </div>
+            
+                        <div>
+                            <a href="#!"
+                               data-toggle="tooltip"
+                               class="btn btn-disabled px-3 my-2 ml-0 text-left" id="connect">
+                              <i class="fa fa-paw"></i><span id="connect-text"> Connect</span>
+                            </a>
+                        </div>
+                    </div>
+				</div>
+				<h1>Tip Us</h1>
+                <div class="card p-2 my-2">
+                    <div id="qrcode"></div>
+                    <div class="address-container">
+                        <div class="input-group" id="nomydogetips">
+                            <i class="fa fa-clipboard clipboard-copy" onClick="copyAddress()"></i>
+                            <input class="form-control" id="doge-address" type="text" value="">
+                        </div>
+                    </div>
+                
+                
+                    <div class="input-group" id="mydogetips-title">
+                        <img src="/images/mydoge.png">
+                        <div style="margin:8px;padding-top:4px;"> MyDogeMask Tip</div>
+                    </div>
+                    <div class="input-group" id="mydogetips">
+                        <i class="fa fa-paw mydogetip-icon"></i>
+                        <input type="number" class="form-control" placeholder="0.69" step="0.01" min="0.01" id="tipAmount" style="text-align: center;">
+                        <div class="input-group-append">
+						    <button type="submit" class="btn btn-success" id="tipSend">tip</button>
+					    </div>
+                    </div>
+                
+                </div>
+
+                <div class="card p-2 py-4 my-2" id="tipResult">
+                </div>
+
+			</div>
+			<!-- Main Content -->
+			<div class="col-md-7">
+				<h1>Content</h1>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sagittis sapien quis augue sollicitudin, sit amet elementum eros varius. Duis auctor urna eget tellus convallis, at venenatis tellus consequat. Proin a lectus lobortis, dignissim velit ac, posuere eros. In euismod euismod risus, ut finibus nibh fermentum non. Vivamus non nisi libero. Integer consectetur auctor tellus, eu molestie nisl maximus in. Nullam ut leo et odio placerat dapibus ut vel ex.</p>
+				<p>Proin ultricies dapibus nunc vel viverra. Donec ut tincidunt arcu, sit amet blandit urna. Duis vel turpis convallis, gravida eros a, ornare ipsum. Etiam eu volutpat massa. Proin vestibulum, nulla ut consequat consequat, mauris tortor bibendum sapien, eget vehicula purus est a metus. Ut vitae enim dignissim, efficitur dolor non, aliquam sapien. Sed lobortis nisi ac purus posuere lobortis. Nulla eget metus tellus. Fusce malesuada ipsum eget nulla bibendum, sit amet tincidunt eros ullamcorper. Nunc vel pur
+Sì, certo, ecco il resto del codice HTML:
+
+php
+Copy code
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+	<script src="https://rawgit.com/dawsonbotsford/satoshi-bitcoin/master/index.bundle.js"></script>
+	<script src="js/qrcode.min.js"></script>
+
+</body>
+</html>
+<script>
+    
+// SETTINGS
+const myaddress = "DQ1zbh86aKpwuHT5gcEtbayi1p8b6xuT2F";
+
+function copyAddress() {
+    navigator.clipboard.writeText(myaddress);
+}
+
+function copythisAddress(a) {
+    navigator.clipboard.writeText(a);
+}
+    
+$(document).ready(function() {
+
+    const qrcode = new QRCode("qrcode", {
+        width: 160,
+        height: 160,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    qrcode.makeCode(myaddress);
+    
+    $("#doge-address").val(myaddress);
+});
+
+if(!window.doge) {
+        $('#mydogetips-title').css({'display':'none'});
+        $('#mydogetips').css({'display':'none'});
+        $('#nomydogetips').css({'display':'flex'});        
+} else {
+        $('#nomydogetips').css({'display':'none'});
+        $('#mydogetips-title').css({'display':'flex'});
+        $('#mydogetips').css({'display':'flex'});        
+}
+
+let myDogeMask = null;
+
+// Listen to the window event which ensures the extension script is injected
+window.addEventListener(
+  'doge#initialized',
+  () => {
+    myDogeMask = window.doge;
+
+    $('#connect').removeClass("btn-disabled");
+    $('#connect').addClass("btn-success");
+    $('#connect').attr("title","Connect MyDogeMask");
+    $('#wallet-address').text('MyDogeMask Extension detected');
+    $('#wallet-balance').text('Connect MyDogeMask Wallet to this website');
+
+    let checkConn = async function() {
+
+    	const connectionStatusRes = await myDogeMask.getConnectionStatus();
+    	console.log(connectionStatusRes);
+    	if (!connectionStatusRes?.connected) {
+
+            $('#connect-text').text(' Connect');
+            $('#wallet-address').text('MyDogeMask Extension detected');
+            $('#wallet-balance').text('Connect MyDogeMask Wallet to this website');
+            $('#connect').attr("title","Connect MyDogeMask");
+            $('#mydogetips-title').css({'display':'none'});
+            $('#mydogetips').css({'display':'none'});
+            $('#nomydogetips').css({'display':'flex'});
+			$('#mydogeJar').hide();
+			$('#tipJar').show();
+        } else {
+        	const balanceRes = await myDogeMask.getBalance();
+            console.log('balance result', balanceRes);
+
+            $('#connect-text').text(' Disconnect');
+            $('#wallet-address').text('Address: ' + connectionStatusRes.address);
+            $('#wallet-balance').text('Balance: ' + sb.toBitcoin(balanceRes.balance) + ' Ð');
+            $('#connect').attr("title","Disconnect MyDogeMask");
+            $('#nomydogetips').css({'display':'none'});
+            $('#mydogetips-title').css({'display':'flex'});
+            $('#mydogetips').css({'display':'flex'});
+			$('#tipJar').hide();
+			$('#mydogeJar').show();
+
+        }
+
+    }
+
+    checkConn();
+
+	$('#connect').bind('click', async function() {
+
+    	const connectionStatusRes = await myDogeMask
+    	    .getConnectionStatus()
+            .catch(console.error);
+    	if (!connectionStatusRes?.connected) {
+		    const connectRes = await myDogeMask.connect();
+            console.log(connectRes);
+            if (connectRes.approved) {
+                $('#connect-text').text('Disconnect');
+                $('#connect').attr("title","Disconnect MyDogeMask");
+                $('#wallet-address').text('Address: ' + connectRes.address);
+                $('#wallet-balance').text('Balance: ' + sb.toBitcoin(connectRes.balance)+ ' Ð');
+                $('#nomydogetips').css({'display':'none'});
+                $('#mydogetips-title').css({'display':'flex'});
+                $('#mydogetips').css({'display':'flex'});
+				$('#tipJar').hide();
+				$('#mydogeJar').show();
+            }
+		} else {
+            const disconnectRes = await myDogeMask.disconnect(/*onSuccess, onError*/);
+            console.log('disconnect result', disconnectRes);
+            if (disconnectRes.disconnected) {
+                $('#connect-text').text('Connect');
+                $('#connect').attr("title","Connect MyDogeMask");
+                $('#wallet-address').text('MyDogeMask Extension detected');
+                $('#wallet-balance').text('Connect MyDogeMask Wallet to this website');
+                $('#mydogetips-title').css({'display':'none'});
+                $('#mydogetips').css({'display':'none'});
+                $('#nomydogetips').css({'display':'flex'});
+				$('#mydogeJar').hide();
+				$('#tipJar').show();
+            }
+		}
+
+	});
+	
+	$('#tipSend').bind('click', async function() {
+
+    	const connectionStatusRes = await myDogeMask
+    	    .getConnectionStatus()
+            .catch(console.error);
+    	if (!connectionStatusRes?.connected) {
+		    return;
+            } else {
+            const txReqRes = await myDogeMask.requestTransaction(
+                {
+                    recipientAddress: myaddress,
+                    dogeAmount: $('#tipAmount').val(),
+                }
+                //onSuccess,
+               // onError(console.log(error));
+            );
+            console.log('request transaction result', txReqRes);
+
+            $('#tipResult').html('<i class="fa fa-check-circle" style="margin-right:5px;"></i><span style="margin-right:5px;">Thanks for your Tip!</span><a href="https://dogecoinlab.org/blockchain/tx/'+txReqRes.txId+'" target="_blank">See transaction details</a>');
+            $('#tipResult').show();
+		}
+
+	});
+
+
+  }
+);
+
+
+</script>
